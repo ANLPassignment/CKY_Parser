@@ -17,6 +17,7 @@ class CKY:
     ones, that is X -> Y with either Y -> A B or Y -> Z .
     It also allows mixed binary productions, that is NT -> NT T or -> T NT"""
 
+
     def __init__(self,grammar):
         '''Create an extended CKY processor for a particular grammar
 
