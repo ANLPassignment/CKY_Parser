@@ -93,7 +93,6 @@ class CKY:
         :rtype self.grammar.start(): str
         :param self.grammar.start(): the start symbol of the grammar
         '''
-
         self.verbose=verbose
         self.words = tokens
         self.n = len(self.words)+1
@@ -122,7 +121,15 @@ class CKY:
         # Adding all the binary rules
         self.binaryScan()
         # Replace the line below for Q6
-        return self.grammar.start() in self.matrix[0][self.n-1].labels()
+        if self.grammar.start() in self.matrix[0][self.n-1].labels():
+            # Calculating the number of successful analyses
+            Analyses_n = 0
+            for i in self.matrix[0][self.n-1].labels():
+                if i == self.grammar.start():
+                    Analyses_n += 1
+            return Analyses_n
+        else:
+            return False
 
     def unaryFill(self):
         '''Q3: add docstring here, and add comments throughout
@@ -139,7 +146,6 @@ class CKY:
             cell=self.matrix[r][r+1]
             word=self.words[r]
             cell.addLabel(word)
-            cell.unaryUpdate(word)
 
     def binaryScan(self):
         '''The heart of the implementation:
@@ -176,10 +182,8 @@ class CKY:
                 if (s1,s2) in self.binary:
                     for s in self.binary[(s1,s2)]:
                         self.log("%s -> %s %s", s, s1, s2, indent=1)
-                        # add the symbol
-                        cell.addLabel(s)
-                        # update this cell
-                        cell.unaryUpdate(s,1)
+                        # add the symbol and update this cell
+                        cell.addLabel(s,1)
 
 # helper methods from cky_print
 CKY.pprint=CKY_pprint
@@ -193,8 +197,12 @@ class Cell:
         self.matrix=matrix
         self._labels=[]
 
-    def addLabel(self,label):
-        self._labels.append(label)
+    def addLabel(self,label,depth=0,recursive=False):
+        # addLabel does nothing if the same label has exists
+        if label not in self.labels():
+            self._labels.append(label)
+            # Call unaryUpdate to update check unary rules and add new label
+            self.unaryUpdate(label,depth,recursive)
 
     def labels(self):
         return self._labels
@@ -222,9 +230,7 @@ class Cell:
             for parent in self.matrix.unary[symbol]:
                 # depth + 1, because of adding an unary rule
                 self.matrix.log("%s -> %s",parent,symbol,indent=depth+1)
-                self.addLabel(parent)
-                # recursive
-                self.unaryUpdate(parent,depth+1,True)
+                self.addLabel(parent,depth+1,True)
 
 # helper methods from cky_print
 Cell.__str__=Cell__str__

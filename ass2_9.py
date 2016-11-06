@@ -2,7 +2,7 @@
 import re
 import cfg_fix
 from cfg_fix import parse_grammar, Tree
-from cky_6 import CKY
+from cky_9 import CKY
 
 def tokenise(tokenstring):
   '''Split a string into a list of tokens
